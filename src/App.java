@@ -5,7 +5,7 @@ import java.awt.event.ActionListener;
 import java.io.*;
 
 public class App {
-	JFrame frame = new JFrame("The Crypt");
+	JFrame frame = new JFrame("Cryppedtograph");
 	JMenuBar menBar = new JMenuBar();
 	JMenu file = new JMenu("File");
 	JMenuItem open = new JMenuItem("Open");
