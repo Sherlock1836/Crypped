@@ -27,6 +27,7 @@ public class App {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		App A = new App();
+		Cipher c = new Cipher();
 	}
 	public App() {
 		//Set up menu bar for frame and add
