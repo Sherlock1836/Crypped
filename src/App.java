@@ -5,70 +5,63 @@ import java.awt.event.ActionListener;
 import java.io.*;
 
 public class App {
-	JFrame frame = new JFrame("Cryppedtograph");
+	JFrame frame = new JFrame("Crypped");
 	JMenuBar menBar = new JMenuBar();
 	JMenu file = new JMenu("File");
 	JMenuItem open = new JMenuItem("Open");
 	JFileChooser fc = new JFileChooser();
 	
 	JPanel topPanel = new JPanel();
-	JTextArea encryptedMessage = new JTextArea(5, 30);
-	JScrollPane eMessScroll = new JScrollPane(encryptedMessage);
+	JTextArea messageTxt = new JTextArea(5, 30);
+	JScrollPane messScroll = new JScrollPane(messageTxt);
 	
 	JPanel midPanel = new JPanel();
 	JButton decrypt = new JButton("Decrypt");
 	JButton encrypt = new JButton("Encrypt");
 	
 	JPanel bottomPanel = new JPanel();
-	JTextArea decryptedMessage = new JTextArea(5, 30);
-	JScrollPane dMessScroll = new JScrollPane(decryptedMessage);
+	JTextArea resultTxt = new JTextArea(5, 30);
+	JScrollPane resultScroll = new JScrollPane(resultTxt);
+
+	Message message = new Message();
+	Cipher cipher = new Cipher();
 	
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		App A = new App();
-		Cipher c = new Cipher();
+		App a = new App();
 	}
 	public App() {
+
 		//Set up menu bar for frame and add
         menBar.add(file);
 		file.add(open);
-		open.addActionListener(new ButtonListener());
+		open.addActionListener(new FileMenButtonListener());
 		frame.setJMenuBar(menBar);
 		
         //Set up top panel and add to frame
 		topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
-		topPanel.add(new JLabel("Encrypted Message"));
-        encryptedMessage.setLineWrap(true);
-		topPanel.add(eMessScroll);
-		eMessScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		topPanel.add(new JLabel("Message"));
+        messageTxt.setLineWrap(true);
+		topPanel.add(messScroll);
+		messScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		frame.add(topPanel);
 		
         //Add Buttons and their listeners to midPanel and add midPanel to frame
 		midPanel.setLayout(new FlowLayout());
-        encrypt.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-            }
-        });
+        EncryptionButtonListener ebl = new EncryptionButtonListener();
+		encrypt.addActionListener(ebl);
 		midPanel.add(encrypt);
-		decrypt.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				String eMessage = encryptedMessage.getText();
-				System.out.println(eMessage);
-			}
-		});
+		decrypt.addActionListener(ebl);
 		midPanel.add(decrypt);
 		frame.add(midPanel);
 		
         //Set up bottom panel and add to frame
 		bottomPanel.setLayout(new BoxLayout(bottomPanel,BoxLayout.Y_AXIS));
-		bottomPanel.add(new JLabel("Decrypted Message"));
-		bottomPanel.add(dMessScroll);
-        decryptedMessage.setLineWrap(true);
-		dMessScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		bottomPanel.add(new JLabel("Result"));
+		bottomPanel.add(resultScroll);
+        resultTxt.setLineWrap(true);
+		resultScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		frame.add(bottomPanel);
 		
         //Set up frame
@@ -80,8 +73,21 @@ public class App {
 		//frame.setResizable(false);
 		frame.setVisible(true);
 	}
-	class ButtonListener implements ActionListener {
-
+	class EncryptionButtonListener implements ActionListener{
+		@Override
+            public void actionPerformed(ActionEvent e) {
+				resultTxt.setText(null);
+				if(e.getSource() == encrypt){
+					message.setDecryptedMessage(messageTxt.getText());
+					resultTxt.setText(cipher.encryptMessage(message));
+				}
+				if(e.getSource() == decrypt){
+					message.setDecryptedMessage(messageTxt.getText());
+					resultTxt.setText(cipher.decryptMessage(message));
+				}
+            }
+	}
+	class FileMenButtonListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
@@ -93,7 +99,6 @@ public class App {
 				}
 			}
 		}
-		
 	}
 	public void loadFile(File file) {
 		BufferedReader fileReader = null;
@@ -101,9 +106,9 @@ public class App {
 			String curLine;
 			fileReader = new BufferedReader(new FileReader(file));
 			while((curLine = fileReader.readLine()) != null) {
-				encryptedMessage.append(curLine);
+				messageTxt.append(curLine);
 				if(curLine.charAt(curLine.length()-1) == '\n');
-					encryptedMessage.append(" ");
+					messageTxt.append(" ");
 			}
 		} catch(IOException ex){
 			ex.printStackTrace();
